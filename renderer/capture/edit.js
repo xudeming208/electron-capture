@@ -263,6 +263,16 @@ const circleMousemoveFun = e => {
 		let x = radiusX + circleConfig.originX - getCanvasWH().x;
 		let y = radiusY + circleConfig.originY - getCanvasWH().y;
 
+		// 向左画
+		if(nowX < circleConfig.originX) {
+			x = radiusX + nowX - getCanvasWH().x;
+		}
+
+		// 向上画
+		if(nowY < circleConfig.originY) {
+			y = radiusY + nowY - getCanvasWH().y;
+		}
+
 		canvasDomCtx.beginPath();
 		canvasDomCtx.ellipse(x * ratio, y * ratio, radiusX * ratio, radiusY * ratio, 0 * Math.PI / 180, 0, 2 * Math.PI);
 		canvasDomCtx.stroke();
@@ -393,6 +403,7 @@ arrow.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	pointBox.style.cursor = 'crosshair';
 	arrow.classList.add('arrow-active');
 	canvasDomCtx.strokeStyle = arrowConfig.color;
 	canvasDomCtx.lineWidth = arrowConfig.width * ratio;
@@ -447,6 +458,7 @@ graffiti.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	pointBox.style.cursor = 'crosshair';
 	graffiti.classList.add('graffiti-active');
 	canvasDomCtx.strokeStyle = graffitiConfig.color;
 	canvasDomCtx.lineWidth = graffitiConfig.width * ratio;
@@ -522,6 +534,7 @@ text.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	pointBox.style.cursor = 'text';
 	text.classList.add('text-active');
 	canvasDomCtx.fillStyle = textConfig.color;
 	canvasDomCtx.textBaseline = "top";
