@@ -1,0 +1,233 @@
+html, body, div, img, span, canvas {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+.mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 10;
+    opacity: .3;
+}
+
+.screen-img{
+    position: fixed;
+    left: 0;
+    top: 0;
+    /*transform: translate3d(-50%,-50%,0);
+    -webkit-transform: translate3d(-50%,-50%,0);*/
+    /*width: 100%;
+    height: 100%;*/
+    opacity: .7;
+    z-index: 20;
+    display: none;
+    cursor: crosshair;
+}
+.canvas{
+    position: fixed;
+    z-index: 30;
+    background: #fff;
+    display: none;
+    /*width: 100%;
+    height: 100%;*/
+}
+
+/*point-box*/
+.point-box{
+    position: fixed;
+    z-index: 40;
+    border: 1px solid #409EFF;
+    cursor: move;
+    display: none;
+}
+.point-box .p{
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border: 1px solid #409EFF;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    transform: translate3d(-50%, -50%, 0);
+    -webkit-transform: translate3d(-50%, -50%, 0);
+}
+.point-box .p1{
+    left: 0;
+    top: 0;
+    cursor: nwse-resize;
+}
+.point-box .p2{
+    left: 50%;
+    top: 0;
+    cursor: ns-resize;
+}
+.point-box .p3{
+    left: 100%;
+    top: 0;
+    cursor: nesw-resize;
+}
+.point-box .p4{
+    left: 0%;
+    top: 50%;
+    cursor: ew-resize;
+}
+.point-box .p5{
+    left: 100%;
+    top: 50%;
+    cursor: ew-resize;
+}
+.point-box .p6{
+    left: 0;
+    top: 100%;
+    cursor: nesw-resize;
+}
+.point-box .p7{
+    left: 50%;
+    top: 100%;
+    cursor: ns-resize;
+}
+.point-box .p8{
+    left: 100%;
+    top: 100%;
+    cursor: nwse-resize;
+}
+
+
+.coordinate{
+    position: fixed;
+    left: -1000px;
+    top: -1000px;
+    z-index: 100;
+}
+.coordinate .inner{
+    padding: 5px 15px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    background: rgba(0, 0, 0, .4);
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+}
+
+
+.canvas-size{
+    position: fixed;
+    left: -1000px;
+    top: -1000px;
+    background: rgba(0, 0, 0, .4);
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    padding: 5px 15px;
+    color: #fff;
+    font-size: 12px;
+    z-index: 90;
+}
+
+/*toolbar*/
+.toolbar{
+    position: fixed;
+    z-index: 50;
+    background: #fff;
+    padding: 10px 10px;
+    transform: translate3d(-100%, 5px, 0);
+    -webkit-transform: translate3d(-100%, 5px, 0);
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    min-width: 350px;
+    display: none;
+}
+
+.spacer,.rect,.rect-active,.circle,.circle-active,.arrow,.arrow-active,.graffiti,.graffiti-active,.text,.text-active,.undo,.undo-disabled,.download,.exit,.copy{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-indent: -9999999px;
+    margin: 0 5px;
+    cursor: pointer;
+    vertical-align: middle;
+    background: url('./images/cut.png') no-repeat;
+    background-size: 100% !important;
+}
+.spacer{
+    width: 1px;
+    background: #ddd;
+}
+.rect {
+    background-position: 0 0;
+}
+.rect:hover, .rect-active{
+    background-position: 0 -20px;
+}
+.circle {
+    background-position: 0 -42px;
+}
+.circle:hover, .circle-active{
+    background-position: 0 -65px;
+}
+.arrow {
+    background-position: 0 -87px;
+}
+.arrow:hover, .arrow-active{
+    background-position: 0 -109px;
+}
+.graffiti {
+    background-position: 0 -130px;
+}
+.graffiti:hover, .graffiti-active{
+    background-position: 0 -153px;
+}
+.text {
+    background-position: 0 -178px;
+}
+.text:hover, .text-active{
+    background-position: 0 -199px;
+}
+.undo {
+    background-position: 0 -222px;
+}
+.undo:hover{
+    background-position: 0 -244px;
+}
+.undo-disabled,.undo-disabled:hover {
+    background-position: 0 -266px;
+}
+.download {
+    background-position: 0 -288px;
+}
+.download:hover{
+    background-position: 0 -308px;
+}
+.exit {
+    background-position: 0 -328px;
+}
+.exit:hover{
+    background-position: 0 -348px;
+}
+.copy {
+    background-position: 0 -368px;
+}
+.copy:hover{
+    background-position: 0 -388px;
+}
+
+
+
+.cut-loading{
+    position: fixed;
+    display: none;
+    left: 50%;
+    top: 50%;
+    color: #fff;
+    transform: translate3d(-50%, -50%, 0);
+    z-index: 1000;
+}

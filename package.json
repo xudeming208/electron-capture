@@ -1,0 +1,100 @@
+{
+    "name": "electron-capture",
+    "version": "1.0.0",
+    "author": {
+        "name": "xudeming",
+        "email": "xudeming208@126.com"
+    },
+    "description": "利用electron开发的桌面截图工具，支持Windows、Mac、Linux，支持双屏幕",
+    "main": "./main/index.js",
+    "keywords": [
+        "electron-capture",
+        "capture",
+        "capture-electron",
+        "electron",
+        "screen-capture",
+        "截图工具",
+        "截图",
+        "网页截图",
+        "屏幕截图",
+        "electron截图",
+        "electron截屏"
+    ],
+    "engines": {
+        "node": ">=8.5"
+    },
+    "scripts": {
+        "dev": "cross-env NODE_ENV=development electron .",
+        "pro": "cross-env NODE_ENV=production electron .",
+        "build": "rm -rf ./build/* && cross-env NODE_ENV=production electron-builder"
+    },
+    "build": {
+        "productName": "截图工具",
+        "appId": "com.xdm.app",
+        "directories": {
+            "output": "build"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowElevation": true,
+            "allowToChangeInstallationDirectory": true,
+            "installerIcon": "./static/icons/icon.ico",
+            "uninstallerIcon": "./static/icons/icon.ico",
+            "installerHeaderIcon": "./static/icons/icon.ico",
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "截图工具"
+        },
+        "dmg": {
+            "contents": [{
+                "x": 410,
+                "y": 150,
+                "type": "link",
+                "path": "/Applications"
+            }, {
+                "x": 130,
+                "y": 150,
+                "type": "file"
+            }]
+        },
+        "mac": {
+            "icon": "./static/icons/icon.icns"
+        },
+        "win": {
+            "icon": "./static/icons/icon.ico",
+            "target": [{
+                "target": "nsis",
+                "arch": [
+                    "ia32"
+                ]
+            }]
+        },
+        "linux": {
+            "icon": "./static/icons",
+            "target": [{
+                "target": "AppImage",
+                "arch": [
+                    "x64"
+                ]
+            }, "deb"]
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/xudeming208/electron-capture"
+    },
+    "homepage": "https://github.com/xudeming208/electron-capture",
+    "bugs": {
+        "url": "https://github.com/xudeming208/electron-capture/issues"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "auto-launch": "5.0.5",
+        "fe-logs": "1.0.13"
+    },
+    "devDependencies": {
+        "cross-env": "6.0.3",
+        "electron": "7.1.2",
+        "electron-builder": "22.2.0"
+    }
+}

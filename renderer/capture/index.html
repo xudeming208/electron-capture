@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>截图工具</title>
+    <link rel="stylesheet" type="text/css" href="./index.css">
+</head>
+
+<body>
+<div id="mask" class="mask"></div>
+<canvas id="canvas" class="canvas"></canvas>
+<img id="screenImg" class="screen-img" src="">
+<div id="pointBox" class="point-box">
+    <span class="p p1" id="p1"></span>
+    <span class="p p2" id="p2"></span>
+    <span class="p p3" id="p3"></span>
+    <span class="p p4" id="p4"></span>
+    <span class="p p5" id="p5"></span>
+    <span class="p p6" id="p6"></span>
+    <span class="p p7" id="p7"></span>
+    <span class="p p8" id="p8"></span>
+</div>
+<div class="cut-loading">loading...</div>
+<div id="coordinate" class="coordinate">
+    <p id="coordinateInner" class="inner"></p>
+</div>
+<div id="canvasSize" class="canvas-size"></div>
+<img id="history" class="history-img" src="">
+<div id="toolbar" class="toolbar">
+    <span id="rect" class="rect">矩形</span>
+    <span id="circle" class="circle">椭圆</span>
+    <span id="arrow" class="arrow">箭头</span>
+    <span id="graffiti" class="graffiti">涂鸦</span>
+    <span id="text" class="text">文字</span>
+    <span class="spacer"></span>
+    <span id="undo" class="undo undo-disabled">撤销</span>
+    <span id="download" class="download">下载</span>
+    <span id="exit" class="exit">退出</span>
+    <span id="copy" class="copy">拷贝</span>
+</div>
+
+<script src="capture.js"></script>
+</body>
+</html>
+
