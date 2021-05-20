@@ -80,7 +80,7 @@ const saveFocusText = () => {
 	// 考虑文本换行的情况
 	let arr = textConfig.dom.innerText ? textConfig.dom.innerText.split('\n') : [];
 	arr.forEach((item, index) => {
-		canvasDomCtx.fillText(item, textConfig.originX, textConfig.originY + index * textConfig.size * 2);
+		canvasDomCtx.fillText(item, textConfig.originX, textConfig.originY + index * textConfig.size * ratio);
 	});
 
 	document.body.removeChild(textConfig.dom);
@@ -99,6 +99,10 @@ const removeAllListener = () => {
 	pointBox.removeEventListener('mousedown', rectMousedownFun);
 	pointBox.removeEventListener('mousemove', rectMousemoveFun);
 	pointBox.removeEventListener('mouseup', rectMouseupFun);
+
+	pointBox.removeEventListener('mousedown', circleMousedownFun);
+	pointBox.removeEventListener('mousemove', circleMousemoveFun);
+	pointBox.removeEventListener('mouseup', circleMouseupFun);
 
 	pointBox.removeEventListener('mousedown', arrowMousedownFun);
 	pointBox.removeEventListener('mousemove', arrowMousemoveFun);
@@ -126,6 +130,7 @@ const removeActiveClass = () => {
 	graffiti.classList.remove('graffiti-active');
 	text.classList.remove('text-active');
 }
+
 
 
 // 矩形
@@ -223,14 +228,80 @@ rect.addEventListener('click', e => {
 
 
 
+
+// 椭圆
+let circleConfig = {
+	color: '#f00',
+	width: 2,
+	canDrag: false,
+	originX: 0,
+	originY: 0
+}
+// circleMousedownFun
+const circleMousedownFun = e => {
+	e.stopPropagation();
+	e.preventDefault();
+
+	circleConfig.originX = e.clientX;
+	circleConfig.originY = e.clientY;
+
+	saveDrawingSurface();
+	circleConfig.canDrag = true;
+}
+// circleMousemoveFun
+const circleMousemoveFun = e => {
+	e.stopPropagation();
+	e.preventDefault();
+
+	if (circleConfig.canDrag) {
+		restoreDrawingSurface();
+
+		let nowX = e.clientX;
+		let nowY = e.clientY;
+		let radiusX = Math.abs((nowX - circleConfig.originX) / 2);
+		let radiusY = Math.abs((nowY - circleConfig.originY) / 2);
+		let x = radiusX + circleConfig.originX - getCanvasWH().x;
+		let y = radiusY + circleConfig.originY - getCanvasWH().y;
+
+		canvasDomCtx.beginPath();
+		canvasDomCtx.ellipse(x * ratio, y * ratio, radiusX * ratio, radiusY * ratio, 0 * Math.PI / 180, 0, 2 * Math.PI);
+		canvasDomCtx.stroke();
+	}
+}
+// circleMouseupFun
+const circleMouseupFun = e => {
+	e.stopPropagation();
+	e.preventDefault();
+	circleConfig.canDrag = false;
+	saveCanvas();
+}
+// 椭圆
+const circle = $('circle');
+circle.addEventListener('click', e => {
+	removeAllListener();
+	removeActiveClass();
+
+	pointBox.style.cursor = 'crosshair';
+	circle.classList.add('circle-active');
+	canvasDomCtx.strokeStyle = circleConfig.color;
+	canvasDomCtx.lineWidth = circleConfig.width * ratio;
+
+	pointBox.addEventListener('mousedown', circleMousedownFun, false);
+	pointBox.addEventListener('mousemove', circleMousemoveFun, false);
+	pointBox.addEventListener('mouseup', circleMouseupFun, false);
+}, false);
+
+
+
+
 // 箭头
 let arrowConfig = {
 	// 颜色
 	color: '#f00',
 	// 线粗细
-	width: 6,
+	width: 3,
 	// 箭头大小
-	size: 30,
+	size: 10,
 	canDrag: false,
 	originX: 0,
 	originY: 0
@@ -283,7 +354,7 @@ const arrowMousemoveFun = e => {
 		let lineangle = Math.atan2(lineY - moveY, lineX - moveX);
 		let angle = lineangle;
 		let x1, y1, x2, y2, x3, y3;
-		let arrowSize = arrowConfig.size;
+		let arrowSize = arrowConfig.size * ratio;
 		// 让箭头更尖
 		let arrowSizeHalf = arrowSize / 2;
 		// x1 = lineX + arrowSize * Math.sin(angle);
@@ -324,7 +395,7 @@ arrow.addEventListener('click', e => {
 
 	arrow.classList.add('arrow-active');
 	canvasDomCtx.strokeStyle = arrowConfig.color;
-	canvasDomCtx.lineWidth = arrowConfig.width;
+	canvasDomCtx.lineWidth = arrowConfig.width * ratio;
 	canvasDomCtx.fillStyle = arrowConfig.color;
 
 	pointBox.addEventListener('mousedown', arrowMousedownFun, false);
@@ -334,12 +405,13 @@ arrow.addEventListener('click', e => {
 
 
 
+
 // 涂鸦
 let graffitiConfig = {
 	// 颜色
 	color: '#f00',
 	// 线粗细
-	width: 3,
+	width: 1,
 	canDrag: false,
 }
 // graffitiMousedownFun
@@ -377,12 +449,13 @@ graffiti.addEventListener('click', e => {
 
 	graffiti.classList.add('graffiti-active');
 	canvasDomCtx.strokeStyle = graffitiConfig.color;
-	canvasDomCtx.lineWidth = graffitiConfig.width;
+	canvasDomCtx.lineWidth = graffitiConfig.width * ratio;
 
 	pointBox.addEventListener('mousedown', graffitiMousedownFun, false);
 	pointBox.addEventListener('mousemove', graffitiMousemoveFun, false);
 	pointBox.addEventListener('mouseup', graffitiMouseupFun, false);
 }, false);
+
 
 
 

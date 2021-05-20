@@ -25,10 +25,10 @@ global.historyArr = [];
 // retina显示屏和普通显示屏
 const ratio = window.devicePixelRatio || 1;
 
-// 因为toolbar、canvasSize的宽度高度一般不会变，所以这里写死，而不是通过JS计算，提高性能
-const toolbarWidth = 170;
-const toolbarHeight = 42;
-const canvasSizeHeight = 30;
+// toolbar的宽高、canvasSize的宽度
+const toolbarWidth = parseFloat(window.getComputedStyle(toolbar, null).minWidth);
+const toolbarHeight = parseFloat(window.getComputedStyle(toolbar, null).height);
+const canvasSizeHeight = parseFloat(window.getComputedStyle(canvasSize, null).height);
 
 // drag
 let canDrag = false;
