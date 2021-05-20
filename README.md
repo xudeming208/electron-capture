@@ -1,6 +1,11 @@
 <div align="center">
 	<img width="100" src="https://github.com/xudeming208/electron-capture/blob/master/static/icons/logo.png?raw=true" alt="capture logo">
 	<p>截图工具</p>
+	<p align="center">
+	  <a href="https://travis-ci.org/xudeming208/electron-capture"><img src="https://travis-ci.org/xudeming208/electron-capture.svg?branch=master" alt="Travis Status"></a>
+	  <a href="https://github.com/xudeming208/electron-capture/graphs/contributors"><img src="https://img.shields.io/github/contributors/xudeming208/electron-capture.svg" alt="Contributors"></a>
+	  <a href="javascript:;"><img src="https://img.shields.io/github/license/xudeming208/electron-capture.svg" alt="License"></a>
+	</p>
 </div>
 
 ## 介绍
