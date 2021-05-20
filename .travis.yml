@@ -1,0 +1,17 @@
+sudo: false
+dist: trusty
+language: node_js
+node_js:
+    - "12.13.1"
+
+branches:
+  only:
+    - master
+cache:
+  directories:
+    - node_modules
+
+install:
+    - npm install
+script:
+    - npm run build
