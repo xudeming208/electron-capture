@@ -19,6 +19,7 @@ const ratio = window.devicePixelRatio || 1;
 const canvasDom = $('canvas');
 const canvasDomCtx = canvasDom.getContext('2d');
 const pointBox = $('pointBox');
+let fontSize = 16;
 
 // 保存截图
 const saveCanvas = () => {
@@ -65,7 +66,7 @@ const saveFocusText = () => {
 	// 考虑文本换行的情况
 	let arr = textConfig.dom.innerText ? textConfig.dom.innerText.split('\n') : [];
 	arr.forEach((item, index) => {
-		canvasDomCtx.fillText(item, textConfig.originX, textConfig.originY + index * textConfig.size * ratio);
+		canvasDomCtx.fillText(item, textConfig.originX, textConfig.originY + index * fontSize * ratio);
 	});
 
 	document.body.removeChild(textConfig.dom);
@@ -118,10 +119,96 @@ const removeActiveClass = () => {
 
 
 
+// 设置大小、颜色的cur
+const setSizeColorCur = (isReset, isSize, isColor) => {
+	let domSize = document.querySelectorAll('.size');
+	let domColor = document.querySelectorAll('.color');
+
+	if (isSize) {
+		for (let i = 0, len = domSize.length; i < len; i++) {
+			domSize[i].classList.remove('size-cur');
+		}
+	}
+	if (isColor) {
+		for (let i = 0, len = domColor.length; i < len; i++) {
+			domColor[i].classList.remove('color-cur');
+		}
+	}
+
+	if (isReset) {
+		domSize[0].classList.add('size-cur');
+		domColor[0].classList.add('color-cur');
+	}
+}
+
+
+// 大小和颜色选择
+const toolCofig = $('toolCofig');
+const shape = $('shape');
+let curTool = 'rect';
+const sizeColorChange = type => {
+	setSizeColorCur(true, true, true);
+
+	// 默认值
+	canvasDomCtx.lineWidth = 2 * ratio;
+	canvasDomCtx.strokeStyle = '#f00';
+
+	toolCofig.style.display = 'inline-block';
+	switch (type) {
+		case 'rect':
+			shape.style.left = '10px';
+			curTool = 'rect';
+			break;
+		case 'circle':
+			shape.style.left = '45px';
+			curTool = 'circle';
+			break;
+		case 'arrow':
+			shape.style.left = '80px';
+			curTool = 'arrow';
+			canvasDomCtx.fillStyle = '#f00';
+			break;
+		case 'graffiti':
+			shape.style.left = '115px';
+			curTool = 'graffiti';
+			break;
+		case 'text':
+			shape.style.left = '151px';
+			curTool = 'text';
+			fontSize = 16;
+			canvasDomCtx.fillStyle = '#f00'
+			canvasDomCtx.textBaseline = "top";
+			canvasDomCtx.font = '' + fontSize * ratio + 'px "微软雅黑"';
+			break;
+	}
+}
+toolCofig.addEventListener('click', e => {
+	let target = e.target;
+	if (target.dataset.size) {
+		setSizeColorCur(false, true, false);
+		target.classList.add('size-cur');
+		canvasDomCtx.lineWidth = +target.dataset.size * ratio;
+
+		if (['text'].includes(curTool)) {
+			fontSize = +target.dataset.size * 8;
+			canvasDomCtx.font = '' + fontSize * ratio + 'px "微软雅黑"';
+		}
+	}
+	if (target.dataset.color) {
+		setSizeColorCur(false, false, true);
+		target.classList.add('color-cur');
+		canvasDomCtx.strokeStyle = target.dataset.color;
+
+		if (['arrow', 'text'].includes(curTool)) {
+			canvasDomCtx.fillStyle = target.dataset.color;
+		}
+	}
+}, false);
+
+
+
 // 矩形
 let rectConfig = {
-	color: '#f00',
-	width: 2,
 	canDrag: false,
 	originX: 0,
 	originY: 0
@@ -180,10 +267,10 @@ rect.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	sizeColorChange('rect');
+
 	pointBox.style.cursor = 'crosshair';
 	rect.classList.add('rect-active');
-	canvasDomCtx.strokeStyle = rectConfig.color;
-	canvasDomCtx.lineWidth = rectConfig.width * ratio;
 
 	pointBox.addEventListener('mousedown', rectMousedownFun, false);
 	pointBox.addEventListener('mousemove', rectMousemoveFun, false);
@@ -192,11 +279,8 @@ rect.addEventListener('click', e => {
 
 
 
-
 // 椭圆
 let circleConfig = {
-	color: '#f00',
-	width: 2,
 	canDrag: false,
 	originX: 0,
 	originY: 0
@@ -228,12 +312,12 @@ const circleMousemoveFun = e => {
 		let y = radiusY + circleConfig.originY - getCanvasWH().y;
 
 		// 向左画
-		if(nowX < circleConfig.originX) {
+		if (nowX < circleConfig.originX) {
 			x = radiusX + nowX - getCanvasWH().x;
 		}
 
 		// 向上画
-		if(nowY < circleConfig.originY) {
+		if (nowY < circleConfig.originY) {
 			y = radiusY + nowY - getCanvasWH().y;
 		}
 
@@ -255,10 +339,10 @@ circle.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	sizeColorChange('circle');
+
 	pointBox.style.cursor = 'crosshair';
 	circle.classList.add('circle-active');
-	canvasDomCtx.strokeStyle = circleConfig.color;
-	canvasDomCtx.lineWidth = circleConfig.width * ratio;
 
 	pointBox.addEventListener('mousedown', circleMousedownFun, false);
 	pointBox.addEventListener('mousemove', circleMousemoveFun, false);
@@ -267,13 +351,8 @@ circle.addEventListener('click', e => {
 
 
 
-
 // 箭头
 let arrowConfig = {
-	// 颜色
-	color: '#f00',
-	// 线粗细
-	width: 3,
 	// 箭头大小
 	size: 10,
 	canDrag: false,
@@ -367,11 +446,10 @@ arrow.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	sizeColorChange('arrow');
+
 	pointBox.style.cursor = 'crosshair';
 	arrow.classList.add('arrow-active');
-	canvasDomCtx.strokeStyle = arrowConfig.color;
-	canvasDomCtx.lineWidth = arrowConfig.width * ratio;
-	canvasDomCtx.fillStyle = arrowConfig.color;
 
 	pointBox.addEventListener('mousedown', arrowMousedownFun, false);
 	pointBox.addEventListener('mousemove', arrowMousemoveFun, false);
@@ -380,13 +458,8 @@ arrow.addEventListener('click', e => {
 
 
 
-
 // 涂鸦
 let graffitiConfig = {
-	// 颜色
-	color: '#f00',
-	// 线粗细
-	width: 1,
 	canDrag: false,
 }
 // graffitiMousedownFun
@@ -422,10 +495,10 @@ graffiti.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	sizeColorChange('graffiti');
+
 	pointBox.style.cursor = 'crosshair';
 	graffiti.classList.add('graffiti-active');
-	canvasDomCtx.strokeStyle = graffitiConfig.color;
-	canvasDomCtx.lineWidth = graffitiConfig.width * ratio;
 
 	pointBox.addEventListener('mousedown', graffitiMousedownFun, false);
 	pointBox.addEventListener('mousemove', graffitiMousemoveFun, false);
@@ -434,15 +507,8 @@ graffiti.addEventListener('click', e => {
 
 
 
-
 // 文字
 let textConfig = {
-	// 颜色
-	color: '#f00',
-	// 大小
-	size: 16,
-	// 字体
-	family: '微软雅黑',
 	dom: '',
 	originX: 0,
 	originY: 0,
@@ -467,7 +533,7 @@ const textMousedownFun = e => {
 		$('undo').classList.remove('undo-disabled');
 	});
 
-	textConfig.dom.style.cssText += 'position:fixed;z-index:50;padding:4px 8px;line-height: 1;border:1px solid #333;min-width:20px;resize: none;outline: none;font-size: ' + textConfig.size + 'px;color:' + textConfig.color + ';font-family:' + textConfig.family + ';left:' + e.clientX + 'px;top:' + e.clientY + 'px;';
+	textConfig.dom.style.cssText += 'position:fixed;z-index:50;padding:4px 8px;line-height: 1;border:1px solid #333;min-width:20px;resize: none;outline: none;font-size: ' + fontSize + 'px;font-family:"微软雅黑";color:' + canvasDomCtx.fillStyle + ';left:' + e.clientX + 'px;top:' + e.clientY + 'px;';
 	document.body.appendChild(textConfig.dom);
 
 	// padding+border
@@ -500,11 +566,10 @@ text.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	sizeColorChange('text');
+
 	pointBox.style.cursor = 'text';
 	text.classList.add('text-active');
-	canvasDomCtx.fillStyle = textConfig.color;
-	canvasDomCtx.textBaseline = "top";
-	canvasDomCtx.font = '' + textConfig.size * ratio + 'px "' + textConfig.family + '"';
 
 	pointBox.addEventListener('mousedown', textMousedownFun, false);
 	pointBox.addEventListener('mousemove', textMousemoveFun, false);

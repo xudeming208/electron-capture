@@ -134,12 +134,21 @@ html, body {
     height: 30px;
 }
 
+.cut-loading{
+    position: fixed;
+    display: none;
+    left: 50%;
+    top: 50%;
+    color: #fff;
+    transform: translate3d(-50%, -50%, 0);
+    z-index: 1000;
+}
+
 /*toolbar*/
 .toolbar{
     position: fixed;
     z-index: 50;
     background: #fff;
-    padding: 10px 10px;
     transform: translate3d(-100%, 5px, 0);
     -webkit-transform: translate3d(-100%, 5px, 0);
     border-radius: 4px;
@@ -147,6 +156,10 @@ html, body {
     min-width: 350px;
     height: 42px;
     display: none;
+}
+
+.toolbar .tool-box {
+    padding: 8px 10px 10px 10px;
 }
 
 .spacer,.rect,.rect-active,.circle,.circle-active,.arrow,.arrow-active,.graffiti,.graffiti-active,.text,.text-active,.undo,.undo-disabled,.download,.exit,.copy{
@@ -162,7 +175,7 @@ html, body {
 }
 .spacer{
     width: 1px;
-    background: #ddd;
+    background: #eee;
 }
 .rect {
     background-position: 0 0;
@@ -223,13 +236,77 @@ html, body {
 }
 
 
-
-.cut-loading{
-    position: fixed;
+/*tool-config*/
+.tool-config {
     display: none;
-    left: 50%;
-    top: 50%;
-    color: #fff;
-    transform: translate3d(-50%, -50%, 0);
-    z-index: 1000;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background: #fff;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    position: relative;
+}
+.tool-config span{
+    display: inline-block;
+    text-indent: -9999999px;
+    margin: 0 5px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+.tool-config .shape {
+    position: absolute;
+    left: 10px;
+    top: -16px;
+    width: 0;
+    height: 0;
+    border: 10px dashed transparent;
+    border-bottom: 10px solid #fff;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
+.tool-config .size {
+    background: gray;
+    border-radius: 100%;
+}
+.tool-config .size-cur {
+    background: #419eff !important;
+}
+.tool-config .small {
+    width: 4px;
+    height: 4px;
+}
+.tool-config .middle {
+    width: 8px;
+    height: 8px;
+}
+.tool-config .big {
+    width: 12px;
+    height: 12px;
+}
+
+.tool-config .color {
+    width: 15px;
+    height: 15px;
+}
+.tool-config .color-cur {
+    border: 1px solid #419eff !important;
+    box-sizing: border-box;
+}
+.tool-config .red {
+    background: red;
+}
+.tool-config .orange {
+    background: orange;
+}
+.tool-config .blue {
+    background: blue;
+}
+.tool-config .green {
+    background: green;
+}
+.tool-config .yellow {
+    background: yellow;
+}
+.tool-config .purple {
+    background: purple;
 }
