@@ -47,21 +47,6 @@ const getCanvasWH = () => {
 	};
 }
 
-// 获取矩形的宽高
-const getDivWH = () => {
-	let style = rectConfig.dom.style || {};
-	let dx = parseInt(style.left);
-	let dy = parseInt(style.top);
-	let dw = parseInt(style.width);
-	let dh = parseInt(style.height);
-	return {
-		dx,
-		dy,
-		dw,
-		dh
-	};
-}
-
 // 截图像素数据
 let drawingSurfacsImageData = '';
 //保存当前的canvas上的数据
@@ -138,7 +123,6 @@ let rectConfig = {
 	color: '#f00',
 	width: 2,
 	canDrag: false,
-	dom: '',
 	originX: 0,
 	originY: 0
 }
@@ -147,12 +131,11 @@ const rectMousedownFun = e => {
 	e.stopPropagation();
 	e.preventDefault();
 
+	saveDrawingSurface();
+
 	rectConfig.originX = e.clientX;
 	rectConfig.originY = e.clientY;
 	rectConfig.canDrag = true;
-	rectConfig.dom = document.createElement('div');
-	rectConfig.dom.style.cssText += 'position:fixed;border:' + rectConfig.width + 'px solid #f00;z-index:50;left:-10000px;top:-10000px;';
-	document.body.appendChild(rectConfig.dom);
 }
 // rectMousemoveFun
 const rectMousemoveFun = e => {
@@ -160,52 +143,33 @@ const rectMousemoveFun = e => {
 	e.preventDefault();
 
 	if (rectConfig.canDrag) {
+		restoreDrawingSurface();
+
 		let nowX = e.clientX;
 		let nowY = e.clientY;
-
-		let left = rectConfig.originX;
-		let top = rectConfig.originY;
+		let x = (rectConfig.originX - getCanvasWH().x) * ratio;
+		let y = (rectConfig.originY - getCanvasWH().y) * ratio;
 
 		// 适应“由下往上画”或者“由右往左画”
 		if (nowX < rectConfig.originX) {
-			left = nowX;
+			x = (nowX - getCanvasWH().x) * ratio;
 		}
 		if (nowY < rectConfig.originY) {
-			top = nowY;
+			y = (nowY - getCanvasWH().y) * ratio;
 		}
 
 		let width = Math.abs(nowX - rectConfig.originX);
 		let height = Math.abs(nowY - rectConfig.originY);
 
-		rectConfig.dom.style.cssText += 'left:' + left + 'px;top:' + top + 'px;width:' + width + 'px;height:' + height + 'px;';
-
-		// canvasDomCtx.drawImage(imgDom, -x * ratio, -y * ratio);
-		// canvasDomCtx.beginPath();
-		// canvasDomCtx.rect((left - x)*ratio, (top - y)*ratio, width*ratio, height*ratio);
-		// canvasDomCtx.stroke();
+		canvasDomCtx.beginPath();
+		canvasDomCtx.rect(x, y, width * ratio, height * ratio);
+		canvasDomCtx.stroke();
 	}
 }
 // rectMouseupFun
 const rectMouseupFun = e => {
 	e.stopPropagation();
 	e.preventDefault();
-
-	let {
-		dx,
-		dy,
-		dw,
-		dh
-	} = getDivWH();
-	let {
-		x,
-		y,
-		w,
-		h
-	} = getCanvasWH();
-	canvasDomCtx.beginPath();
-	canvasDomCtx.rect((dx - x) * ratio + rectConfig.width, (dy - y) * ratio + rectConfig.width, (dw - rectConfig.width) * ratio, (dh - rectConfig.width) * ratio);
-	canvasDomCtx.stroke();
-	document.body.removeChild(rectConfig.dom);
 
 	rectConfig.canDrag = false;
 	saveCanvas();
@@ -499,6 +463,8 @@ const textMousedownFun = e => {
 	textConfig.dom.setAttribute('contenteditable', 'plaintext-only');
 	setTimeout(() => {
 		textConfig.dom.focus();
+		// 获得焦点后，将撤回按钮设为可点击
+		$('undo').classList.remove('undo-disabled');
 	});
 
 	textConfig.dom.style.cssText += 'position:fixed;z-index:50;padding:4px 8px;line-height: 1;border:1px solid #333;min-width:20px;resize: none;outline: none;font-size: ' + textConfig.size + 'px;color:' + textConfig.color + ';font-family:' + textConfig.family + ';left:' + e.clientX + 'px;top:' + e.clientY + 'px;';
