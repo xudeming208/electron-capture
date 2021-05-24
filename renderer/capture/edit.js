@@ -19,7 +19,6 @@ const ratio = window.devicePixelRatio || 1;
 const canvasDom = $('canvas');
 const canvasDomCtx = canvasDom.getContext('2d');
 const pointBox = $('pointBox');
-let fontSize = 16;
 
 // 保存截图
 const saveCanvas = () => {
@@ -33,7 +32,7 @@ const saveCanvas = () => {
 	undo.classList.remove('undo-disabled');
 }
 
-// 获取canvas的宽高
+// 获取canvas的宽高和坐标
 const getCanvasWH = () => {
 	let style = canvasDom.style || {};
 	let x = parseInt(style.left);
@@ -57,22 +56,6 @@ const saveDrawingSurface = () => {
 //恢复canvas的数据，主要用来显示最新的线段，擦除原来的线段
 const restoreDrawingSurface = () => {
 	canvasDomCtx.putImageData(drawingSurfacsImageData, 0, 0, 0, 0, getCanvasWH().w * ratio, getCanvasWH().h * ratio);
-}
-
-
-// 输入文本还没失去焦点时，就执行其他动作，此时将文本也画入画布
-const saveFocusText = () => {
-	// canvasDomCtx.fillText(textConfig.dom.innerText || '', textConfig.originX, textConfig.originY);
-	// 考虑文本换行的情况
-	let arr = textConfig.dom.innerText ? textConfig.dom.innerText.split('\n') : [];
-	arr.forEach((item, index) => {
-		canvasDomCtx.fillText(item, textConfig.originX, textConfig.originY + index * fontSize * ratio);
-	});
-
-	document.body.removeChild(textConfig.dom);
-	textConfig.dom = '';
-
-	saveCanvas();
 }
 
 
@@ -119,11 +102,64 @@ const removeActiveClass = () => {
 
 
 
-// 设置大小、颜色的cur
-const setSizeColorCur = (isReset, isSize, isColor) => {
-	let domSize = document.querySelectorAll('.size');
-	let domColor = document.querySelectorAll('.color');
+// 输入文本还没失去焦点时，就执行其他动作，此时将文本也画入画布
+const saveFocusText = () => {
+	// canvasDomCtx.fillText(textConfig.dom.innerText || '', textConfig.originX, textConfig.originY);
+	// 考虑文本换行的情况
+	let arr = textConfig.dom.innerText ? textConfig.dom.innerText.split('\n') : [];
+	arr.forEach((item, index) => {
+		canvasDomCtx.fillText(item, textConfig.originX, textConfig.originY + index * configObj.text.fontSize * ratio);
+	});
 
+	document.body.removeChild(textConfig.dom);
+	textConfig.dom = '';
+
+	saveCanvas();
+}
+
+
+
+// 大小和颜色选择开始
+const toolCofig = $('toolCofig');
+const iconArrow = $('iconArrow');
+const domSize = document.querySelectorAll('.size');
+const domColor = document.querySelectorAll('.color');
+let curTool = 'rect';
+// 保存配置大小和颜色的对象.避免每次切换工具都重置大小和颜色。下面的值都是默认值
+let configObj = {
+	rect: {
+		lineWidth: 2 * ratio,
+		strokeStyle: '#f00',
+		sizeIndex: 0,
+		colorIndex: 0,
+	},
+	circle: {
+		lineWidth: 2 * ratio,
+		strokeStyle: '#f00',
+		sizeIndex: 0,
+		colorIndex: 0,
+	},
+	arrow: {
+		lineWidth: 2 * ratio,
+		strokeStyle: '#f00',
+		sizeIndex: 0,
+		colorIndex: 0,
+	},
+	graffiti: {
+		lineWidth: 2 * ratio,
+		strokeStyle: '#f00',
+		sizeIndex: 0,
+		colorIndex: 0,
+	},
+	text: {
+		fontSize: 16,
+		fillStyle: '#f00',
+		sizeIndex: 0,
+		colorIndex: 0,
+	},
+}
+// 重置大小、颜色的cur
+const resetSizeColorCur = (isSize, isColor) => {
 	if (isSize) {
 		for (let i = 0, len = domSize.length; i < len; i++) {
 			domSize[i].classList.remove('size-cur');
@@ -134,76 +170,87 @@ const setSizeColorCur = (isReset, isSize, isColor) => {
 			domColor[i].classList.remove('color-cur');
 		}
 	}
-
-	if (isReset) {
-		domSize[0].classList.add('size-cur');
-		domColor[0].classList.add('color-cur');
-	}
 }
-
-
-// 大小和颜色选择
-const toolCofig = $('toolCofig');
-const shape = $('shape');
-let curTool = 'rect';
 const sizeColorChange = type => {
-	setSizeColorCur(true, true, true);
-
-	// 默认值
-	canvasDomCtx.lineWidth = 2 * ratio;
-	canvasDomCtx.strokeStyle = '#f00';
-
 	toolCofig.style.display = 'inline-block';
+
+	resetSizeColorCur(true, true);
+
 	switch (type) {
 		case 'rect':
-			shape.style.left = '10px';
+			iconArrow.style.left = '10px';
 			curTool = 'rect';
 			break;
 		case 'circle':
-			shape.style.left = '45px';
+			iconArrow.style.left = '45px';
 			curTool = 'circle';
 			break;
 		case 'arrow':
-			shape.style.left = '80px';
+			iconArrow.style.left = '80px';
 			curTool = 'arrow';
-			canvasDomCtx.fillStyle = '#f00';
+			// 箭头的填充色和边框色一样
+			canvasDomCtx.fillStyle = configObj.arrow.strokeStyle;
 			break;
 		case 'graffiti':
-			shape.style.left = '115px';
+			iconArrow.style.left = '115px';
 			curTool = 'graffiti';
 			break;
 		case 'text':
-			shape.style.left = '151px';
+			iconArrow.style.left = '151px';
 			curTool = 'text';
-			fontSize = 16;
-			canvasDomCtx.fillStyle = '#f00'
-			canvasDomCtx.textBaseline = "top";
-			canvasDomCtx.font = '' + fontSize * ratio + 'px "微软雅黑"';
+			domSize[configObj.text.sizeIndex].classList.add('size-cur');
+			domColor[configObj.text.colorIndex].classList.add('color-cur');
+			canvasDomCtx.font = '' + configObj.text.fontSize * ratio + 'px "微软雅黑"';
+			canvasDomCtx.fillStyle = configObj.text.fillStyle;
 			break;
 	}
+
+	// 共同的部分
+	if (['rect', 'circle', 'arrow', 'graffiti'].includes(curTool)) {
+		domSize[configObj[curTool].sizeIndex].classList.add('size-cur');
+		domColor[configObj[curTool].colorIndex].classList.add('color-cur');
+		canvasDomCtx.lineWidth = configObj[curTool].lineWidth;
+		canvasDomCtx.strokeStyle = configObj[curTool].strokeStyle;
+	}
 }
+// 工具点击事件
 toolCofig.addEventListener('click', e => {
 	let target = e.target;
+
+	// 大小设置
 	if (target.dataset.size) {
-		setSizeColorCur(false, true, false);
+		resetSizeColorCur(true, false);
 		target.classList.add('size-cur');
-		canvasDomCtx.lineWidth = +target.dataset.size * ratio;
 
+		configObj[curTool].lineWidth = +target.dataset.size * ratio;
+		configObj[curTool].sizeIndex = +target.dataset.index;
+
+		// 文字时:
 		if (['text'].includes(curTool)) {
-			fontSize = +target.dataset.size * 8;
-			canvasDomCtx.font = '' + fontSize * ratio + 'px "微软雅黑"';
+			configObj[curTool].fontSize = +target.dataset.size * 8;
 		}
 	}
-	if (target.dataset.color) {
-		setSizeColorCur(false, false, true);
-		target.classList.add('color-cur');
-		canvasDomCtx.strokeStyle = target.dataset.color;
 
-		if (['arrow', 'text'].includes(curTool)) {
-			canvasDomCtx.fillStyle = target.dataset.color;
+	// 颜色设置
+	if (target.dataset.color) {
+		resetSizeColorCur(false, true);
+		target.classList.add('color-cur');
+
+		configObj[curTool].strokeStyle = target.dataset.color;
+		configObj[curTool].colorIndex = +target.dataset.index;
+
+		// 文字时:
+		if (['text'].includes(curTool)) {
+			configObj[curTool].fillStyle = target.dataset.color;
 		}
 	}
+
+	// 改变大小和颜色后，要实时改变canvasDomCtx的配置，才能生效
+	sizeColorChange(curTool);
 }, false);
+// 大小和颜色选择结束
+
+
 
 
 
@@ -533,7 +580,7 @@ const textMousedownFun = e => {
 		$('undo').classList.remove('undo-disabled');
 	});
 
-	textConfig.dom.style.cssText += 'position:fixed;z-index:50;padding:4px 8px;line-height: 1;border:1px solid #333;min-width:20px;resize: none;outline: none;font-size: ' + fontSize + 'px;font-family:"微软雅黑";color:' + canvasDomCtx.fillStyle + ';left:' + e.clientX + 'px;top:' + e.clientY + 'px;';
+	textConfig.dom.style.cssText += 'position:fixed;z-index:50;padding:4px 8px;line-height: 1;border:1px solid #333;min-width:20px;resize: none;outline: none;font-size: ' + configObj.text.fontSize + 'px;font-family:"微软雅黑";color:' + configObj.text.fillStyle + ';left:' + e.clientX + 'px;top:' + e.clientY + 'px;';
 	document.body.appendChild(textConfig.dom);
 
 	// padding+border
@@ -566,6 +613,7 @@ text.addEventListener('click', e => {
 	removeAllListener();
 	removeActiveClass();
 
+	canvasDomCtx.textBaseline = "top";
 	sizeColorChange('text');
 
 	pointBox.style.cursor = 'text';

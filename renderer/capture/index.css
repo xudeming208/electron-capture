@@ -253,7 +253,7 @@ html, body {
     cursor: pointer;
     vertical-align: middle;
 }
-.tool-config .shape {
+.tool-config .icon-arrow {
     position: absolute;
     left: 10px;
     top: -16px;
