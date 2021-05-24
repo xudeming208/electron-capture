@@ -38,6 +38,8 @@ const launchInput = $('launchInput');
 const launchLabel = $('launchLabel');
 const hideInput = $('hideInput');
 const hideLabel = $('hideLabel');
+const toolInput = $('toolInput');
+const toolLabel = $('toolLabel');
 const tipsWrap = $('tipsWrap');
 const tipsContent = $('tipsContent');
 const github = $('github');
@@ -65,6 +67,12 @@ function init() {
 		hideInput.removeAttribute('checked');
 	}
 	ipcRenderer.send('is-hide-windows', +localStorage.hideInput);
+	// 是否保存截图工具的大小和颜色选择
+	if(+localStorage.toolInput) {
+		toolInput.setAttribute('checked', true);
+	} else {
+		toolInput.removeAttribute('checked');
+	}
 
 	// 快捷键
 	captureKeyBox.innerHTML = captureKey;
@@ -178,6 +186,23 @@ hideLabel.addEventListener('click', () => {
 	}
 	ipcRenderer.send('is-hide-windows', +localStorage.hideInput);
 	hideWindows = +localStorage.hideInput;
+}, false);
+// 是否保存截图工具的大小和颜色选择
+toolInput.addEventListener('click', () => {
+	if(toolInput.hasAttribute('checked')) {
+		toolInput.removeAttribute('checked');
+		localStorage.toolInput = 0;
+	} else {
+		toolInput.setAttribute('checked', true);
+		localStorage.toolInput = 1;
+	}
+}, false);
+toolLabel.addEventListener('click', () => {
+	if(toolInput.hasAttribute('checked')) {
+		localStorage.toolInput = 0;
+	} else {
+		localStorage.toolInput = 1;
+	}
 }, false);
 
 

@@ -108,7 +108,7 @@ const saveFocusText = () => {
 	// 考虑文本换行的情况
 	let arr = textConfig.dom.innerText ? textConfig.dom.innerText.split('\n') : [];
 	arr.forEach((item, index) => {
-		canvasDomCtx.fillText(item, textConfig.originX, textConfig.originY + index * configObj.text.fontSize * ratio);
+		canvasDomCtx.fillText(item, textConfig.originX, textConfig.originY + index * toolConfigObj.text.fontSize * ratio);
 	});
 
 	document.body.removeChild(textConfig.dom);
@@ -126,7 +126,7 @@ const domSize = document.querySelectorAll('.size');
 const domColor = document.querySelectorAll('.color');
 let curTool = 'rect';
 // 保存配置大小和颜色的对象.避免每次切换工具都重置大小和颜色。下面的值都是默认值
-let configObj = {
+let toolConfigObj = {
 	rect: {
 		lineWidth: 2 * ratio,
 		strokeStyle: '#f00',
@@ -158,6 +158,12 @@ let configObj = {
 		colorIndex: 0,
 	},
 }
+
+// 如果选中了“是否保存截图工具的大小和颜色选择”，则获取localstorage中的配置，否则用默认值
+if (+localStorage.toolInput && localStorage.toolConfigObj) {
+	toolConfigObj = JSON.parse(localStorage.toolConfigObj);
+}
+
 // 重置大小、颜色的cur
 const resetSizeColorCur = (isSize, isColor) => {
 	if (isSize) {
@@ -189,7 +195,7 @@ const sizeColorChange = type => {
 			iconArrow.style.left = '80px';
 			curTool = 'arrow';
 			// 箭头的填充色和边框色一样
-			canvasDomCtx.fillStyle = configObj.arrow.strokeStyle;
+			canvasDomCtx.fillStyle = toolConfigObj.arrow.strokeStyle;
 			break;
 		case 'graffiti':
 			iconArrow.style.left = '115px';
@@ -198,19 +204,19 @@ const sizeColorChange = type => {
 		case 'text':
 			iconArrow.style.left = '151px';
 			curTool = 'text';
-			domSize[configObj.text.sizeIndex].classList.add('size-cur');
-			domColor[configObj.text.colorIndex].classList.add('color-cur');
-			canvasDomCtx.font = '' + configObj.text.fontSize * ratio + 'px "微软雅黑"';
-			canvasDomCtx.fillStyle = configObj.text.fillStyle;
+			domSize[toolConfigObj.text.sizeIndex].classList.add('size-cur');
+			domColor[toolConfigObj.text.colorIndex].classList.add('color-cur');
+			canvasDomCtx.font = '' + toolConfigObj.text.fontSize * ratio + 'px "微软雅黑"';
+			canvasDomCtx.fillStyle = toolConfigObj.text.fillStyle;
 			break;
 	}
 
 	// 共同的部分
 	if (['rect', 'circle', 'arrow', 'graffiti'].includes(curTool)) {
-		domSize[configObj[curTool].sizeIndex].classList.add('size-cur');
-		domColor[configObj[curTool].colorIndex].classList.add('color-cur');
-		canvasDomCtx.lineWidth = configObj[curTool].lineWidth;
-		canvasDomCtx.strokeStyle = configObj[curTool].strokeStyle;
+		domSize[toolConfigObj[curTool].sizeIndex].classList.add('size-cur');
+		domColor[toolConfigObj[curTool].colorIndex].classList.add('color-cur');
+		canvasDomCtx.lineWidth = toolConfigObj[curTool].lineWidth;
+		canvasDomCtx.strokeStyle = toolConfigObj[curTool].strokeStyle;
 	}
 }
 // 工具点击事件
@@ -222,12 +228,12 @@ toolCofig.addEventListener('click', e => {
 		resetSizeColorCur(true, false);
 		target.classList.add('size-cur');
 
-		configObj[curTool].lineWidth = +target.dataset.size * ratio;
-		configObj[curTool].sizeIndex = +target.dataset.index;
+		toolConfigObj[curTool].lineWidth = +target.dataset.size * ratio;
+		toolConfigObj[curTool].sizeIndex = +target.dataset.index;
 
 		// 文字时:
 		if (['text'].includes(curTool)) {
-			configObj[curTool].fontSize = +target.dataset.size * 8;
+			toolConfigObj[curTool].fontSize = +target.dataset.size * 8;
 		}
 	}
 
@@ -236,21 +242,24 @@ toolCofig.addEventListener('click', e => {
 		resetSizeColorCur(false, true);
 		target.classList.add('color-cur');
 
-		configObj[curTool].strokeStyle = target.dataset.color;
-		configObj[curTool].colorIndex = +target.dataset.index;
+		toolConfigObj[curTool].strokeStyle = target.dataset.color;
+		toolConfigObj[curTool].colorIndex = +target.dataset.index;
 
 		// 文字时:
 		if (['text'].includes(curTool)) {
-			configObj[curTool].fillStyle = target.dataset.color;
+			toolConfigObj[curTool].fillStyle = target.dataset.color;
 		}
 	}
 
 	// 改变大小和颜色后，要实时改变canvasDomCtx的配置，才能生效
 	sizeColorChange(curTool);
+
+	// 将配置保存到localstorage中
+	if (+localStorage.toolInput) {
+		localStorage.toolConfigObj = JSON.stringify(toolConfigObj);
+	}
 }, false);
 // 大小和颜色选择结束
-
-
 
 
 
@@ -580,7 +589,7 @@ const textMousedownFun = e => {
 		$('undo').classList.remove('undo-disabled');
 	});
 
-	textConfig.dom.style.cssText += 'position:fixed;z-index:50;padding:4px 8px;line-height: 1;border:1px solid #333;min-width:20px;resize: none;outline: none;font-size: ' + configObj.text.fontSize + 'px;font-family:"微软雅黑";color:' + configObj.text.fillStyle + ';left:' + e.clientX + 'px;top:' + e.clientY + 'px;';
+	textConfig.dom.style.cssText += 'position:fixed;z-index:50;padding:4px 8px;line-height: 1;border:1px solid #333;min-width:20px;resize: none;outline: none;font-size: ' + toolConfigObj.text.fontSize + 'px;font-family:"微软雅黑";color:' + toolConfigObj.text.fillStyle + ';left:' + e.clientX + 'px;top:' + e.clientY + 'px;';
 	document.body.appendChild(textConfig.dom);
 
 	// padding+border
