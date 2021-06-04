@@ -24,7 +24,7 @@
 
 ```javascript
 1. npm i
-2. npm run build
+2. npm run build:all
 3. 打包完成后，进入build文件夹中，将软件文件安装即可使用
 	- Windows：找到exe文件
 	- Mac：找到dmg文件
