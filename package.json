@@ -26,11 +26,18 @@
     "scripts": {
         "dev": "cross-env NODE_ENV=development electron .",
         "pro": "cross-env NODE_ENV=production electron .",
-        "build": "rm -rf ./build/* && cross-env NODE_ENV=production electron-builder"
+        "build:win": "rm -rf ./build/* && cross-env NODE_ENV=production electron-builder -w",
+        "build:mac": "rm -rf ./build/* && cross-env NODE_ENV=production electron-builder -m",
+        "build:linux": "rm -rf ./build/* && cross-env NODE_ENV=production electron-builder -l",
+        "build:all": "rm -rf ./build/* && cross-env NODE_ENV=production electron-builder -mwl",
+        "build:byCurrentOs": "rm -rf ./build/* && cross-env NODE_ENV=production electron-builder"
     },
     "build": {
         "productName": "截图工具",
         "appId": "com.xdm.app",
+        "copyright": "xudeming208@126.com",
+        "asar": true,
+        "compression": "maximum",
         "directories": {
             "output": "build"
         },
